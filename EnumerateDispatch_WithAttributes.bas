@@ -227,7 +227,7 @@ Attribute Enumerate.VB_Description = "Returns a synthetic IEnumVARIANT for the i
     With obj
         .pvTable = VarPtr(vTable(0))
         ' Test whether the callback function exists.
-        .dispid = ResolveDispId(iterable, callback)
+        .dispid = Resolve(iterable, callback)
         Set .caller = iterable
         .First = base
         .Last = base + count - 1
@@ -489,11 +489,11 @@ Attribute KeepAlive.VB_Description = "Keep alive the iterable object stored in h
 End Property
 
 
-Private Function ResolveDispId( _
+Private Function Resolve( _
     ByVal obj As Object, _
     ByVal member As String _
 ) As Long
-Attribute ResolveDispId.VB_Description = "IDispatch:GetIDsOfNames for specified object and name."
+Attribute Resolve.VB_Description = "IDispatch:GetIDsOfNames for specified object and name."
 
     ' IDispatch::GetIDsOfNames — vtable slot 5
     ' HRESULT GetIDsOfNames(REFIID, LPOLESTR*, UINT, LCID, DISPID*)
@@ -555,10 +555,11 @@ Attribute ResolveDispId.VB_Description = "IDispatch:GetIDsOfNames for specified 
     hr = DispCallFunc(ObjPtr(obj), oVft, CC_STDCALL, VT_I4, cvt, vt(0), pv(0), dummy)
 
     If hr < 0 Then
-        Err.Raise vbObjectError Or &H5001, "ResolveDispId", "GetIDsOfNames failed: 0x" & Hex$(hr)
+        Err.Raise vbObjectError Or &H5001, "IDispatch", "GetIDsOfNames failed: 0x" & Hex$(hr)
+        Exit Function
     End If
 
-    ResolveDispId = dispid
+    Resolve = dispid
 
 End Function
 
