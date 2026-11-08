@@ -3,6 +3,18 @@
 ![Platform](https://img.shields.io/badge/Platform-VBA%20(Excel%2C%20Access%2C%20Word%2C%20Outlook%2C%20PowerPoint)-blue)
 ![Architecture](https://img.shields.io/badge/Architecture-x86%20%7C%20x64-lightgrey)
 ![Rubberduck](https://img.shields.io/badge/Rubberduck-Ready-orange)
+![Status](https://img.shields.io/badge/Status-Retired-red)
+
+> [!WARNING]
+> **Retired — superseded by [vba-enumerator-late-binding](https://github.com/vgrstn/vba-enumerator-late-binding).**
+>
+> This module was a hardcore exercise: calling `IDispatch::Invoke` directly through `DispCallFunc`, with the DISPID resolved only once. The idea was to beat `CallByName`, but every item still takes a `DispCallFunc` call, and a `Declare` call alone costs about 1.4 µs — more than VBA needs for a whole late-bound call. Measured per item: `CallByName` 1.36 µs, a For Each through this module 2.44 µs. It is slower than the late-binding version, and it offers nothing extra: both work for any object with an indexed property, without an interface.
+>
+> Known issues, which will **not** be fixed here:
+> - An error raised in the callback or in the body of a `For Each` reaches the caller one level up as `Err.Number = 0` (the `KeepAlive` Collection clears `Err` when the enumerator is released during the error).
+> - The result of `IDispatch::Invoke` and `GetIDsOfNames` is not checked (`DispCallFunc` returns only its own result), so an error in the callback or a misspelled callback name gives empty items instead of an error.
+>
+> Use [vba-enumerator-late-binding](https://github.com/vgrstn/vba-enumerator-late-binding) when the iterable Class can't implement an interface, and [vba-enumerator](https://github.com/vgrstn/vba-enumerator) (early binding, about 6 times faster) when it can. The code below is kept for reference only.
 
 VBA standard module for `IEnumVARIANT` interface implementation — no typelib required, dispatch binding via `DispCallFunc`.
 
